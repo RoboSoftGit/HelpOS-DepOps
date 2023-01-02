@@ -1,0 +1,79 @@
+{{- if .Values.gw.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-gw-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-gw",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHosts": "*",
+    "RemoteServices" : [
+      {
+        "Name": "UAC",
+        "BaseUrl": "{{ .Values.gw.RemoteServices.uac.BaseUrl }}",
+        "Timeout": {{ .Values.gw.RemoteServices.uac.Timeout }},
+        "Retry": {{ .Values.gw.RemoteServices.uac.Retry }},
+        "Cache": {{ .Values.gw.RemoteServices.uac.Cache }},
+        "IgnoreServerCertificate": {{ .Values.gw.RemoteServices.uac.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "STS",
+        "BaseUrl": "{{ .Values.gw.RemoteServices.sts.BaseUrl }}",
+        "Timeout": {{ .Values.gw.RemoteServices.sts.Timeout }},
+        "Retry": {{ .Values.gw.RemoteServices.sts.Retry }},
+        "Cache": {{ .Values.gw.RemoteServices.sts.Cache }},
+        "IgnoreServerCertificate": {{ .Values.gw.RemoteServices.sts.IgnoreServerCertificate }}
+      }
+    ],
+    "ServiceBus": {
+      "RabbitMqSettings": {
+        "Host": "{{ .Values.serviceBus.mq.host }}",
+        "Port": "{{ .Values.serviceBus.mq.port }}",
+        "Login": "{{ .Values.serviceBus.mq.login }}",
+        "Password": "{{ .Values.serviceBus.mq.password }}",
+        "UseSSL": "{{ .Values.serviceBus.mq.useSSL }}",
+        "RecoveryInterval": "{{ .Values.serviceBus.mq.recoveryInterval }}"
+      },
+      "ServiceBusSettings": {
+        "BusName": "{{ .Values.serviceBus.bus.busName }}",
+        "SubscriptionName": "helpos-gw",
+        "RetryCount": "{{ .Values.serviceBus.bus.retryCount }}",
+        "DelayBetweenRetriesInSeconds": "{{ .Values.serviceBus.bus.delayBetweenRetriesInSeconds }}"
+      },
+      "MessageSettings": {
+        "IgnoreNullValues": "{{ .Values.serviceBus.message.ignoreNullValues }}",
+        "AutoDelete": "{{ .Values.serviceBus.message.autoDelete }}",
+        "IsPersistent": "{{ .Values.serviceBus.message.isPersistent }}",
+        "DeliveryMode": "{{ .Values.serviceBus.message.deliveryMode }}"
+      }
+    }   
+   }
+
+{{- end }}

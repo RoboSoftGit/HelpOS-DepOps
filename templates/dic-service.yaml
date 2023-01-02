@@ -1,0 +1,16 @@
+{{- if .Values.dic.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpos-dic-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: helpos-dic
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+{{- end }}

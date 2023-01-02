@@ -1,0 +1,47 @@
+apiVersion: v2
+description: helpOs helmchart
+type: application
+maintainers:
+  - name: yu.narko
+    email: yu.narko@vebtech.by
+name: coreOS
+sources:
+  - https://bitbucket.lab.vebtech.by/scm/hos/helmchart.git
+  - https://marketplace.azurecr.io/helm/v1/repo
+version: 0.0.1
+appVersion: 0.0.1
+home: https://bitbucket.lab.vebtech.by/projects/HOS/repos/helmchart/
+
+dependencies:
+- name: rabbitmq
+  version: "8.20.0"
+  repository: https://charts.bitnami.com/bitnami
+  condition: rabbitmq.enabled
+- name: redis
+  version: "14.8.5"
+  repository: https://charts.bitnami.com/bitnami
+  condition: redis.enabled
+- name: postgresql
+  version: "10.12.6"
+  repository: https://charts.bitnami.com/bitnami
+  condition: postgresql.enabled
+- name: elasticsearch
+  version: "15.10.0"
+  repository: https://charts.bitnami.com/bitnami
+  condition: elasticsearch.enabled
+- name: logstash
+  version: "3.6.3"
+  repository: https://charts.bitnami.com/bitnami
+  condition: logstash.enabled
+- name: kibana
+  version: "8.1.9"
+  repository: https://charts.bitnami.com/bitnami
+  condition: kibana.enabled
+- name: pgadmin
+  version: "0.1.12"
+  repository: https://cetic.github.io/helm-charts
+  condition: pgadmin.enabled
+- name: minio
+  version: "7.2.0"
+  repository: https://charts.bitnami.com/bitnami
+  condition: minio.enabled

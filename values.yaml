@@ -1,0 +1,568 @@
+########## DEPENDENCIES VARIABLES ##########
+
+rabbitmq:
+  enabled: true
+  replicaCount: 1
+  storageClassName: "default"
+  auth:
+    username: helpos
+    password: hSucvmhZs7Rd9Gdt
+    erlangCookie: hSucvmhZs7Rd9Gdt
+  extraConfiguration: |-
+      management.path_prefix = /rabbit
+
+redis:
+  enabled: true
+  replica:
+    replicaCount: 1
+  storageClassName: "default"
+  global:
+    redis:
+      password: dLDM3GUMR8XYwDnc
+  auth:
+    password: dLDM3GUMR8XYwDnc
+
+postgesql:
+  enabled: true
+  global:
+    storageClassName: "default"
+    postgresql:
+      postgresqlDatabase: "postgres"
+      postgresqlUsername: "postgres"
+      postgresqlPassword: "MZk6D82ch7"
+      replicationPassword: "MZk6D82ch7"
+  postgresqlPassword: "MZk6D82ch7"
+  maxConnections: 1000
+  postgresqlExtendedConf:
+    max_connections: 1000
+  storageClass: "default"
+  persistence:
+    size: 1Gi  
+elasticsearch:
+  enabled: true
+  global:
+    storageClassName: "default"
+  master:
+    replicas: 1
+  data:
+    replicas: 1
+  coordinating:
+    replicas: 1
+
+kibana:
+  enabled: true
+  elasticsearch:
+    hosts:
+      - helpos-elasticsearch-master-0
+      - helpos-elasticsearch-data-0
+      - helpos-elasticsearch-coordinating-only
+    port: 9200
+  configuration:
+    server:
+      basePath: /kibana 
+  volumePermissions:
+    persistence:
+      enabled: false
+      size: 1Gi
+
+logstash:
+  enabled: true
+  input: |-
+    http {
+      port => 8080
+      codec => json
+      add_field => {
+        "input_origin" => "log"
+        "input_plugin" => "http"
+      }
+    }
+  filter: |-
+    split {
+      field => "events"
+    }
+
+    ruby {
+      code => '
+          event.get("events").each { |k, v|
+              event.set(k,v)
+          }
+          event.remove("events")
+      '
+    }
+
+    mutate {
+      add_field => {
+        "Application" => "%{[Properties][Application]}"
+        "Environment" => "%{[Properties][Environment]}"
+      }
+      remove_field =>  [ "headers",  "@version", "%{[Properties][Application]}", "%{[Properties][Environment]}" ] 
+    }
+
+    kv {
+    }
+
+    if [data] {
+      json {
+        source => "data"
+        target => "data"
+      }
+    }
+
+    date {
+      match => [ "Timestamp", "ISO8601" ]
+      target => "Timestamp"
+      timezone => "UTC"
+    }
+
+    if ![Level] {
+      mutate {
+        add_field => {
+          "Level" => "trace"
+        }
+      }
+    }
+
+    mutate {
+      lowercase => [ "Level", "Application" ]
+    }
+
+    if [Level] not in [ "information", "trace", "debug", "info", "warn", "error", "fatal" ] {
+      drop { }
+    }
+    
+  output: |-
+    elasticsearch {
+      hosts => "helpos-elasticsearch-coordinating-only:9200"
+      index => "helpos-%{[input_origin]}-%{[Environment]}-%{[Application]}-%{+yyyy.MM.dd}"
+    }
+
+    stdout { }
+
+pgadmin:
+  enabled: false
+  service:
+    type: ClusterIP
+
+minio:
+  enabled: true
+  global:
+    storageClassName: "default"
+  accessKey: 
+    password: ""
+  secretKey:
+    password: ""
+  persistence:
+    enabled: true
+    storageClass: "default"
+  ingress:
+    enabled: true
+    hostname: helpos-minio.lab.vebtech.by
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 10240m
+      kubernetes.io/ingress.class: addon-http-application-routing
+    extraTls:
+    - hosts:
+        - helpos-minio.lab.vebtech.by
+      secretName: lab-vebtech-wildcard
+    
+      
+
+
+
+########## COMMON VARIABLES ##########
+
+namespace: helpos
+
+dockerconfigjson: "eyJhdXRocyI6eyJoZWxwb3MuYXp1cmVjci5pbyI6eyJ1c2VybmFtZSI6ImhlbHBvcyIsInBhc3N3b3JkIjoiWTZyQXFNYWRNU0wySWN4RzY9OGxOa21PUkNqT21mS0kiLCJlbWFpbCI6Inl1Lm5hcmtvQHZlYnRlY2guYnkiLCJhdXRoIjoiYUdWc2NHOXpPbGsyY2tGeFRXRmtUVk5NTWtsamVFYzJQVGhzVG10dFQxSkRhazl0Wmt0SiJ9fX0="
+
+imagePullSecrets: pull-credentials
+
+tls: lab-vebtech-wildcard
+
+logs:
+  environment: dev
+  logstashUrl: http://helpos-logstash:8080
+
+basicAuth:
+  enabled: false
+  secretName: helpos
+  secret: ""
+
+serviceBus:
+  mq:
+    host: "helpos-rabbitmq"
+    port: 5672
+    login: "helpos"
+    password: "hSucvmhZs7Rd9Gdt"
+    useSSL: false
+    recoveryInterval: 10
+  bus:
+    busName: "development"
+    retryCount: 3
+    delayBetweenRetriesInSeconds: "[5, 60]"
+  message:
+    ignoreNullValues: true
+    autoDelete: false
+    isPersistent: true
+    deliveryMode: 2
+
+fileStorage:
+  backetName: "helpos"
+  serviceUrl: "https://helpos-minio.lab.vebtech.by"
+  accessKeyId: "ZcUceufppf4YZM6Y"
+  secretAccessKey: "HNFQkvS9JDhwuw8T"
+  useHttp: false
+
+########## FRONTEND VARIABLES ##########
+
+frontend:
+  image:
+    repository: helpos.azurecr.io/frontend
+    tag: latest
+  dns: helpos.lab.vebtech.by
+  
+
+########## BACKEND VARIABLES ##########
+
+backend:
+  image:
+    repository: helpos.azurecr.io
+    tag: latest
+
+
+########## GATEWAY VARIABLES ##########
+
+gw:
+  enabled: true
+  image: gw
+  dns: helpos-gw.lab.vebtech.by
+  RemoteServices:
+    uac:
+      BaseUrl: http://helpos-uac-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    sts:
+      BaseUrl: http://helpos-sts-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+  ocelot:
+    BaseUrl: https://helpos-gw.lab.vebtech.by
+    auth:
+      scheme: "http"
+      host: "helpos-auth-service"
+      port: 80
+      swaggerUrl: "http://helpos-auth-service/swagger/v1/swagger.json"
+    agg:
+      scheme: "http"
+      host: "helpos-agg-service"
+      port: 80
+      swaggerUrl: "http://helpos-agg-service/swagger/v1/swagger.json"
+    fo:
+      scheme: "http"
+      host: "helpos-fo-service"
+      port: 80
+      swaggerUrl: "http://helpos-fo-service/swagger/v1/swagger.json"
+    bo:
+      scheme: "http"
+      host: "helpos-bo-service"
+      port: 80
+      swaggerUrl: "http://helpos-bo-service/swagger/v1/swagger.json"
+
+
+########## UAC VARIABLES ##########
+
+uac:
+  enabled: true
+  image: uac
+  dns: helpos-uac.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=uac;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## TASK VARIABLES ##########
+
+task:
+  enabled: true
+  image: task
+  replicaCount: 1
+  dns: helpos-task.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=task;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## TEMPLATE SERVICE VARIABLES ##########
+
+templateservice:
+  enabled: false
+  image: templateservice
+  replicaCount: 1
+  dns: helpos-templateservice.lab.vebtech.by
+  RemoteServices:
+    org:
+      BaseUrl: http://helpos-org-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=templateservice;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## CUST VARIABLES ##########
+
+cust:
+  enabled: true
+  image: cust
+  replicaCount: 1
+  dns: helpos-cust.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=cust;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## DIC VARIABLES ##########
+
+dic:
+  enabled: true
+  image: dic
+  replicaCount: 1
+  dns: helpos-dic.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=dic;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## ORG VARIABLES ##########
+
+org:
+  enabled: true
+  image: org
+  replicaCount: 1
+  dns: helpos-org.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=org;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## STS VARIABLES ##########
+
+sts:
+  enabled: true
+  image: sts
+  dns: helpos-sts.lab.vebtech.by
+  redis:
+    connectionString: "helpos-redis-master:6379,defaultDatabase=1,password=dLDM3GUMR8XYwDnc"
+
+
+########## FrontOffice VARIABLES ##########
+
+fo:
+  enabled: true
+  image: fo
+  dns: helpos-fo.lab.vebtech.by
+  RemoteServices:
+    dic:
+      BaseUrl: http://helpos-dic-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    templ:
+      BaseUrl: http://helpos-templateservice-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    task:
+      BaseUrl: http://helpos-task-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    cust:
+      BaseUrl: http://helpos-cust-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    org:
+      BaseUrl: http://helpos-org-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+
+
+########## BackOffice VARIABLES ##########
+
+bo:
+  enabled: true
+  image: bo
+  dns: helpos-bo.lab.vebtech.by
+  RemoteServices:
+    uac:
+      BaseUrl: http://helpos-uac-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false    
+    dic:
+      BaseUrl: http://helpos-dic-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    templ:
+      BaseUrl: http://helpos-templateservice-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    task:
+      BaseUrl: http://helpos-task-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    cust:
+      BaseUrl: http://helpos-cust-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    org:
+      BaseUrl: http://helpos-org-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+
+########## AGG VARIABLES ##########
+
+agg:
+  enabled: true
+  image: agg
+  dns: helpos-agg.lab.vebtech.by
+  RemoteServices:
+    dic:
+      BaseUrl: http://helpos-dic-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    task:
+      BaseUrl: http://helpos-task-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    cust:
+      BaseUrl: http://helpos-cust-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    org:
+      BaseUrl: http://helpos-org-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    nsPush:
+      BaseUrl: http://helpos-nspush-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+
+
+########## DICT VARIABLES ##########
+
+dict:
+  enabled: false
+  image: dict
+  dns: helpos-dict.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=dict;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## AUTH VARIABLES ##########
+
+auth:
+  enabled: true
+  image: auth
+  dns: helpos-auth.lab.vebtech.by
+  TestPinCode: 123123
+  RemoteServices:
+    uac:
+      BaseUrl: http://helpos-uac-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    sts:
+      BaseUrl: http://helpos-sts-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+    ns:
+      BaseUrl: http://helpos-ns-service
+      Timeout: 60
+      Retry: 0
+      Cache: 0
+      IgnoreServerCertificate: false
+
+
+########## NS VARIABLES ##########
+
+ns:
+  enabled: true
+  image: ns
+  dns: helpos-ns.lab.vebtech.by
+  Notifications:
+    templates:
+      channel: "Sms"
+      title: ""
+      body: "Код: {{ pin_code }}"
+
+
+########## NS SENDER VARIABLES ##########
+
+nssender:
+  enabled: true
+  image: nssender
+  dns: helpos-nssender.lab.vebtech.by
+  SmsByGateway:
+    ApiToken: "cf1606291e1af7466d52c9715dde0a3e"
+    AlphaNameId : "1512"
+  RemoteServices:
+    smsGateway:
+      Name: "SmsBy"
+      BaseUrl: "https://app.sms.by"
+      Timeout: 60
+      Retry: 5
+      Cache: 0
+      IgnoreServerCertificate: false
+
+
+########## NS PUSH VARIABLES ##########
+
+nspush:
+  enabled: true
+  image: nspush
+  dns: helpos-nspush.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=push;Username=postgres;Password=dq9tKbiWiQ"
+
+
+########## LOG VARIABLES ##########
+
+helposlog:
+  enabled: true
+  image: log
+  replicaCount: 1
+  dns: helpos-log.lab.vebtech.by
+  ConnectionStrings:
+    MasterDatabase: "Host=helpos-postgresql;Port=5432;Database=log;Username=postgres;Password=dq9tKbiWiQ"

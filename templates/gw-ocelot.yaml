@@ -1,0 +1,4330 @@
+{{- if .Values.gw.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-gw-ocelot
+  namespace: {{ .Values.namespace }}
+data:
+  ocelot.json: |
+    {
+     "Routes": [
+      {
+       "DownstreamPathTemplate": "/auth/login/cellular",
+       "DownstreamScheme": "{{ .Values.gw.ocelot.auth.scheme }}",
+       "DownstreamHostAndPorts": [
+        {
+         "Host": "{{ .Values.gw.ocelot.auth.host }}",
+         "Port": {{ .Values.gw.ocelot.auth.port }}
+        }
+       ],
+       "UpstreamPathTemplate": "/auth/login/cellular",
+       "UpstreamHttpMethod": [ "Post" ],
+       "SwaggerKey": "AUTH"
+      },
+      {
+       "DownstreamPathTemplate": "/auth/login/pin",
+       "DownstreamScheme": "{{ .Values.gw.ocelot.auth.scheme }}",
+       "DownstreamHostAndPorts": [
+        {
+         "Host": "{{ .Values.gw.ocelot.auth.host }}",
+         "Port": {{ .Values.gw.ocelot.auth.port }}
+        }
+       ],
+       "UpstreamPathTemplate": "/auth/login/pin",
+       "UpstreamHttpMethod": [ "Post" ],
+       "SwaggerKey": "AUTH"
+      },
+      {
+       "DownstreamPathTemplate": "/auth/refresh",
+       "DownstreamScheme": "{{ .Values.gw.ocelot.auth.scheme }}",
+       "DownstreamHostAndPorts": [
+        {
+         "Host": "{{ .Values.gw.ocelot.auth.host }}",
+         "Port": {{ .Values.gw.ocelot.auth.port }}
+        }
+       ],
+       "UpstreamPathTemplate": "/auth/refresh",
+       "UpstreamHttpMethod": [ "Post" ],
+       "SwaggerKey": "AUTH"
+      },
+      {
+       "DownstreamPathTemplate": "/auth/logoff",
+       "DownstreamScheme": "{{ .Values.gw.ocelot.auth.scheme }}",
+       "DownstreamHostAndPorts": [
+        {
+         "Host": "{{ .Values.gw.ocelot.auth.host }}",
+         "Port": {{ .Values.gw.ocelot.auth.port }}
+        }
+       ],
+       "UpstreamPathTemplate": "/auth/logoff",
+       "UpstreamHttpMethod": [ "Post" ],
+       "SwaggerKey": "AUTH",
+       "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+       },
+       "AddHeadersToRequest": {
+        "X-AccessToken": "Claims[X-AccessToken] > value > |"
+       }
+      },
+      {
+       "DownstreamPathTemplate": "/user/info",
+       "DownstreamScheme": "{{ .Values.gw.ocelot.auth.scheme }}",
+       "DownstreamHostAndPorts": [
+        {
+         "Host": "{{ .Values.gw.ocelot.auth.host }}",
+         "Port": {{ .Values.gw.ocelot.auth.port }}
+        }
+       ],
+       "UpstreamPathTemplate": "/user/info",
+       "UpstreamHttpMethod": [ "Get" ],
+       "SwaggerKey": "AUTH",
+       "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+       },
+       "AddHeadersToRequest": {
+        "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+        "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+       }
+      },
+      {
+        "DownstreamPathTemplate": "/agg/dashboard",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.agg.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.agg.host }}",
+            "Port": {{ .Values.gw.ocelot.agg.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/agg/dashboard",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "AGG",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/ceilingType/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/ceilingType/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/city/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/city/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/country/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/country/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/by-customer/{customerId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/by-customer/{customerId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/contact/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/contact/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/add-customer",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/add-customer",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/delete-customer/{customerCustomerObjectId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/delete-customer/{customerCustomerObjectId}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/customer/object/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/customer/object/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/decision/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/decision/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dict/department/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dict/department/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/documentType/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/documentType/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/organization/employee/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/organization/employee/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/feedback/{feedBackId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/feedback/{feedBackId}",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/our-document/filter/{systemId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/our-document/filter/{systemId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/our-document",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/our-document",
+        "UpstreamHttpMethod": [
+          "Post",
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/our-document/file/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/our-document/file/{documentId}",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/our-document/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/our-document/{documentId}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document",
+        "UpstreamHttpMethod": [
+          "Post",
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/file/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/file/{documentId}",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/project-document/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/project-document/{documentId}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/region/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/region/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/regulatory-document-customer/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/regulatory-document-customer/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/regulatory-document-customer",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/regulatory-document-customer",
+        "UpstreamHttpMethod": [
+          "Post",
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/regulatory-document-customer/file/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/regulatory-document-customer/file/{documentId}",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/regulatory-document-customer/{documentId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/regulatory-document-customer/{documentId}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/create/draft/{templateUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/create/draft/{templateUid}",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/save",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/reopen/{requestUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/reopen/{requestUid}",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/save/{requestUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/save/{requestUid}/photos",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/photo/{fileUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/photo/{fileUid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/agree",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/agree",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/inprocess",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/inprocess",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/completed",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/completed",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/employee/{employeeId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/employee/{employeeId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/distributionRequests",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/distributionRequests",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/{requestUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/{requestUid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/request/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/request/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/requestType/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/requestType/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/scopeTask/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/scopeTask/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/source/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/source/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/systemType/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/systemType/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/task/update",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/task/update",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/task/to-approve",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/task/to-approve",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/task/approvalTypes",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/task/approvalTypes",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/task/save/{requestTaskUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/task/save/{requestTaskUid}/photos",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/system/{systemUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/system/{systemUid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/filter/{keyWord}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/filter/{keyWord}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/search/{text}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/search/{text}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/page/{pageIndex}/{pageSize}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/page/{pageIndex}/{pageSize}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/{uid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/dictionary/taskTemplate/remove/{uid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/dictionary/taskTemplate/remove/{uid}",
+        "UpstreamHttpMethod": [
+          "Delete"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/bo/userinfo",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.bo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.bo.host }}",
+            "Port": {{ .Values.gw.ocelot.bo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/bo/userinfo",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "BO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/cls/system",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/cls/system",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/cls/system/by-customer-object/{guid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/cls/system/by-customer-object/{guid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/cls/decision",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/cls/decision",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/cls/userinfo",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/cls/userinfo",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/customer/object/all",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/customer/object/all",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/customer/object/{guid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/customer/object/{guid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/customer/object/bycustomer/{customerId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/customer/object/bycustomer/{customerId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/doctype/list",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/doctype/list",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/doctype/{guid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/doctype/{guid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/doctype/by-customer-object/{guid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/doctype/by-customer-object/{guid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/projectdocuments/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/projectdocuments/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/projectdocuments/save/{projectDocUid}/files",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/projectdocuments/save/{projectDocUid}/files",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/projectdocuments/get/{projectDocUid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/projectdocuments/get/{projectDocUid}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/projectdocuments/get/by-customer-object/{customerObjectId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/projectdocuments/get/by-customer-object/{customerObjectId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/customerdocuments/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/customerdocuments/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/agree",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/agree",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/inprocess",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/inprocess",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/completed",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/completed",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/{guid}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/{guid}",
+        "UpstreamHttpMethod": [
+          "Get",
+          "Delete"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/filter",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/filter",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/create",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/create",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/save",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/save",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/save/{requestUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/save/{requestUid}/photos",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/get/{requestUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/get/{requestUid}/photos",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/approve",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/approve",
+        "UpstreamHttpMethod": [
+          "Put"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/request/feedback",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/request/feedback",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/requesttask/save/{requestTaskUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/requesttask/save/{requestTaskUid}/photos",
+        "UpstreamHttpMethod": [
+          "Post"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/requesttask/get/{requestTaskUid}/photos",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/requesttask/get/{requestTaskUid}/photos",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/template/{templateId}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/template/{templateId}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/template/filter/{keyWord}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/template/filter/{keyWord}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      },
+      {
+        "DownstreamPathTemplate": "/fo/template/system/{systemCode}",
+        "DownstreamScheme": "{{ .Values.gw.ocelot.fo.scheme }}",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "{{ .Values.gw.ocelot.fo.host }}",
+            "Port": {{ .Values.gw.ocelot.fo.port }}
+          }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "UpstreamPathTemplate": "/fo/template/system/{systemCode}",
+        "UpstreamHttpMethod": [
+          "Get"
+        ],
+        "SwaggerKey": "FO",
+        "AddHeadersToRequest": {
+          "X-Owner-Uid": "Claims[X-Owner-Uid] > value > |",
+          "X-Owner-Roles": "Claims[X-Owner-Roles] > value > |"
+        }
+      }
+     ],
+     "SwaggerEndPoints": [
+      {
+       "Key": "AUTH",
+       "Config": [
+        {
+         "Name": "Auth API",
+         "Version": "v1",
+         "Url": "{{ .Values.gw.ocelot.auth.swaggerUrl }}"
+        }
+       ]
+      },
+      {
+        "Key": "AGG",
+        "Config": [
+          {
+            "Name": "AGG API",
+            "Version": "v1",
+            "Url": "{{ .Values.gw.ocelot.agg.swaggerUrl }}"
+          }
+        ]
+      },
+      {
+        "Key": "FO",
+        "Config": [
+          {
+            "Name": "FO API",
+            "Version": "v1",
+            "Url": "{{ .Values.gw.ocelot.fo.swaggerUrl }}"
+          }
+        ]
+      },
+      {
+        "Key": "BO",
+        "Config": [
+          {
+            "Name": "BO API",
+            "Version": "v1",
+            "Url": "{{ .Values.gw.ocelot.bo.swaggerUrl }}"
+          }
+        ]
+      }    
+     ],
+     "GlobalConfiguration": {
+      "BaseUrl": "{{ .Values.gw.ocelot.BaseUrl }}"
+     }
+    }
+
+{{- end }}

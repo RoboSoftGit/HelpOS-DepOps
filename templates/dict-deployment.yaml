@@ -1,0 +1,44 @@
+{{- if .Values.dict.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-dict-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-dict
+spec:
+  replicas: {{ .Values.dict.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-dict
+  template:
+    metadata:
+      labels:
+        app: helpos-dict
+    spec:
+      containers:
+      - name: helpos-dict
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.dict.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.dict.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-dict-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

@@ -1,0 +1,48 @@
+{{- if .Values.task.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-task-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-task
+spec:
+  replicas: {{ .Values.task.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-task
+  template:
+    metadata:
+      labels:
+        app: helpos-task
+    spec:
+      containers:
+      - name: helpos-task
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.task.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.task.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-task-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

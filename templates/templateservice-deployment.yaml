@@ -1,0 +1,48 @@
+{{- if .Values.templateservice.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-templateservice-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-templateservice
+spec:
+  replicas: {{ .Values.templateservice.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-templateservice
+  template:
+    metadata:
+      labels:
+        app: helpos-templateservice
+    spec:
+      containers:
+      - name: helpos-templateservice
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.templateservice.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.templateservice.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-templateservice-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

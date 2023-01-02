@@ -1,0 +1,16 @@
+{{- if .Values.nssender.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpos-nssender-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: helpos-nssender
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+{{- end }}

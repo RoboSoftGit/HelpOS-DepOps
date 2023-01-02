@@ -1,0 +1,80 @@
+{{- if .Values.agg.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-agg-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-agg",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHoagg": "*",
+    "RemoteServices" : [
+     {
+      "Name": "DIC",
+      "BaseUrl": "{{ .Values.agg.RemoteServices.dic.BaseUrl }}",
+      "Timeout": {{ .Values.agg.RemoteServices.dic.Timeout }},
+      "Retry": {{ .Values.agg.RemoteServices.dic.Retry }},
+      "Cache": {{ .Values.agg.RemoteServices.dic.Cache }},
+      "IgnoreServerCertificate": {{ .Values.agg.RemoteServices.dic.IgnoreServerCertificate }}
+     },
+     {
+      "Name": "NS.PUSH",
+      "BaseUrl": "{{ .Values.agg.RemoteServices.nsPush.BaseUrl }}",
+      "Timeout": {{ .Values.agg.RemoteServices.nsPush.Timeout }},
+      "Retry": {{ .Values.agg.RemoteServices.nsPush.Retry }},
+      "Cache": {{ .Values.agg.RemoteServices.nsPush.Cache }},
+      "IgnoreServerCertificate": {{ .Values.agg.RemoteServices.nsPush.IgnoreServerCertificate }}
+     },
+     {
+      "Name": "TASK",
+      "BaseUrl": "{{ .Values.agg.RemoteServices.task.BaseUrl }}",
+      "Timeout": {{ .Values.agg.RemoteServices.task.Timeout }},
+      "Retry": {{ .Values.agg.RemoteServices.task.Retry }},
+      "Cache": {{ .Values.agg.RemoteServices.task.Cache }},
+      "IgnoreServerCertificate": {{ .Values.agg.RemoteServices.task.IgnoreServerCertificate }}
+     },
+     {
+      "Name": "CUST",
+      "BaseUrl": "{{ .Values.agg.RemoteServices.cust.BaseUrl }}",
+      "Timeout": {{ .Values.agg.RemoteServices.cust.Timeout }},
+      "Retry": {{ .Values.agg.RemoteServices.cust.Retry }},
+      "Cache": {{ .Values.agg.RemoteServices.cust.Cache }},
+      "IgnoreServerCertificate": {{ .Values.agg.RemoteServices.cust.IgnoreServerCertificate }}
+     },
+     {
+      "Name": "ORG",
+      "BaseUrl": "{{ .Values.agg.RemoteServices.org.BaseUrl }}",
+      "Timeout": {{ .Values.agg.RemoteServices.org.Timeout }},
+      "Retry": {{ .Values.agg.RemoteServices.org.Retry }},
+      "Cache": {{ .Values.agg.RemoteServices.org.Cache }},
+      "IgnoreServerCertificate": {{ .Values.agg.RemoteServices.org.IgnoreServerCertificate }}
+     }
+    ]   
+   }
+{{- end }}

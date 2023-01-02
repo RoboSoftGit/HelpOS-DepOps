@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helpos-dict-service
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- if .Values.basicAuth.enabled }}
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: {{ .Values.basicAuth.secretName }}
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+    {{- end }}
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.dict.dns }}
+      secretName: {{ .Values.tls }}
+  rules:
+    - host: {{ .Values.dict.dns }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: helpos-dict-service
+                port:
+                  number: 80

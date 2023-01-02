@@ -1,0 +1,48 @@
+{{- if .Values.sts.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-sts-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-sts
+spec:
+  replicas: {{ .Values.sts.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-sts
+  template:
+    metadata:
+      labels:
+        app: helpos-sts
+    spec:
+      containers:
+      - name: helpos-sts
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.sts.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.sts.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-sts-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

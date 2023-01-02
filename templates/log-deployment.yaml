@@ -1,0 +1,44 @@
+{{- if .Values.helposlog.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-log-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-log
+spec:
+  replicas: {{ .Values.helposlog.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-log
+  template:
+    metadata:
+      labels:
+        app: helpos-log
+    spec:
+      containers:
+      - name: helpos-log
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.helposlog.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.helposlog.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-log-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

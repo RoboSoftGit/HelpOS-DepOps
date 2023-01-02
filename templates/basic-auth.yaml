@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  auth: {{ .Values.basicAuth.secret}}
+kind: Secret
+metadata:
+  name: {{ .Values.basicAuth.secretName}}
+  namespace: {{ .Values.namespace}}
+type: Opaque

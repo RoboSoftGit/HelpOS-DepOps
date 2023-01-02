@@ -1,0 +1,16 @@
+{{- if .Values.bo.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpos-bo-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: helpos-bo
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+{{- end }}

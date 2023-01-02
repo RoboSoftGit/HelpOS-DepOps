@@ -1,0 +1,48 @@
+{{- if .Values.nssender.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-nssender-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-nssender
+spec:
+  replicas: {{ .Values.nssender.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-nssender
+  template:
+    metadata:
+      labels:
+        app: helpos-nssender
+    spec:
+      containers:
+      - name: helpos-nssender
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.nssender.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.nssender.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-nssender-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

@@ -1,0 +1,16 @@
+{{- if .Values.task.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpos-task-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: helpos-task
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+{{- end }}

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: helpos-sts-service
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- if .Values.basicAuth.enabled }}
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: {{ .Values.basicAuth.secretName }}
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+    {{- end }}
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.sts.dns }}
+      secretName: {{ .Values.tls }}
+  rules:
+    - host: {{ .Values.sts.dns }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: helpos-sts-service
+                port:
+                  number: 80

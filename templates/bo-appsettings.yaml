@@ -1,0 +1,94 @@
+{{- if .Values.bo.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-bo-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-bo",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+    "AllowedHosts": "*",
+    "FileStorage": {
+     "BucketName": "{{ .Values.fileStorage.backetName }}",
+     "ServiceUrl" : "{{ .Values.fileStorage.serviceUrl }}",
+     "AccessKeyId" : "{{ .Values.fileStorage.accessKeyId }}",
+     "SecretAccessKey" : "{{ .Values.fileStorage.secretAccessKey }}",
+     "UseHttp": {{ .Values.fileStorage.useHttp }}
+    },
+    "RemoteServices" : [
+      {
+        "Name": "UAC",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.uac.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.uac.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.uac.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.uac.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.uac.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "DIC",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.dic.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.dic.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.dic.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.dic.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.dic.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "TEMPL",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.templ.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.templ.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.templ.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.templ.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.templ.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "TASK",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.task.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.task.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.task.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.task.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.task.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "CUST",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.cust.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.cust.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.cust.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.cust.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.cust.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "ORG",
+        "BaseUrl": "{{ .Values.bo.RemoteServices.org.BaseUrl }}",
+        "Timeout": {{ .Values.bo.RemoteServices.org.Timeout }},
+        "Retry": {{ .Values.bo.RemoteServices.org.Retry }},
+        "Cache": {{ .Values.bo.RemoteServices.org.Cache }},
+        "IgnoreServerCertificate": {{ .Values.bo.RemoteServices.org.IgnoreServerCertificate }}
+      }
+    ]
+   }
+{{- end }}

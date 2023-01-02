@@ -1,0 +1,68 @@
+{{- if .Values.auth.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-auth-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-auth",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHoauth": "*",
+
+    "TestPinCode": "{{ .Values.auth.TestPinCode }}",
+
+    "RemoteServices" : [
+      {
+        "Name": "UAC",
+        "BaseUrl": "{{ .Values.auth.RemoteServices.uac.BaseUrl }}",
+        "Timeout": {{ .Values.auth.RemoteServices.uac.Timeout }},
+        "Retry": {{ .Values.auth.RemoteServices.uac.Retry }},
+        "Cache": {{ .Values.auth.RemoteServices.uac.Cache }},
+        "IgnoreServerCertificate": {{ .Values.auth.RemoteServices.uac.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "STS",
+        "BaseUrl": "{{ .Values.auth.RemoteServices.sts.BaseUrl }}",
+        "Timeout": {{ .Values.auth.RemoteServices.sts.Timeout }},
+        "Retry": {{ .Values.auth.RemoteServices.sts.Retry }},
+        "Cache": {{ .Values.auth.RemoteServices.sts.Cache }},
+        "IgnoreServerCertificate": {{ .Values.auth.RemoteServices.sts.IgnoreServerCertificate }}
+      },
+      {
+        "Name": "NS",
+        "BaseUrl": "{{ .Values.auth.RemoteServices.ns.BaseUrl }}",
+        "Timeout": {{ .Values.auth.RemoteServices.ns.Timeout }},
+        "Retry": {{ .Values.auth.RemoteServices.ns.Retry }},
+        "Cache": {{ .Values.auth.RemoteServices.ns.Cache }},
+        "IgnoreServerCertificate": {{ .Values.auth.RemoteServices.ns.IgnoreServerCertificate }}
+      }
+    ]
+   }
+
+{{- end }}

@@ -1,0 +1,48 @@
+{{- if .Values.bo.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-bo-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-bo
+spec:
+  replicas: {{ .Values.bo.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-bo
+  template:
+    metadata:
+      labels:
+        app: helpos-bo
+    spec:
+      containers:
+      - name: helpos-bo
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.bo.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.bo.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-bo-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

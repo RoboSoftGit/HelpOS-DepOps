@@ -1,0 +1,64 @@
+{{- if .Values.cust.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-cust-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-cust",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+      "MasterDatabase": "{{ .Values.cust.ConnectionStrings.MasterDatabase }}"
+    },
+    "ServiceBus": {
+      "RabbitMqSettings": {
+        "Host": "{{ .Values.serviceBus.mq.host }}",
+        "Port": "{{ .Values.serviceBus.mq.port }}",
+        "Login": "{{ .Values.serviceBus.mq.login }}",
+        "Password": "{{ .Values.serviceBus.mq.password }}",
+        "UseSSL": "{{ .Values.serviceBus.mq.useSSL }}",
+        "RecoveryInterval": "{{ .Values.serviceBus.mq.recoveryInterval }}"
+      },
+      "ServiceBusSettings": {
+        "BusName": "{{ .Values.serviceBus.bus.busName }}",
+        "SubscriptionName": "helpos-cust",
+        "RetryCount": "{{ .Values.serviceBus.bus.retryCount }}",
+        "DelayBetweenRetriesInSeconds": "{{ .Values.serviceBus.bus.delayBetweenRetriesInSeconds }}"
+      },
+      "MessageSettings": {
+        "IgnoreNullValues": "{{ .Values.serviceBus.message.ignoreNullValues }}",
+        "AutoDelete": "{{ .Values.serviceBus.message.autoDelete }}",
+        "IsPersistent": "{{ .Values.serviceBus.message.isPersistent }}",
+        "DeliveryMode": "{{ .Values.serviceBus.message.deliveryMode }}"
+      }
+    }   
+   }
+
+{{- end }}

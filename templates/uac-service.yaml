@@ -1,0 +1,16 @@
+{{- if .Values.uac.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helpos-uac-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: helpos-uac
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    name: http
+{{- end }}

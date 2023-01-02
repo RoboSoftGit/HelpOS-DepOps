@@ -1,0 +1,48 @@
+{{- if .Values.agg.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-agg-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-agg
+spec:
+  replicas: {{ .Values.agg.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-agg
+  template:
+    metadata:
+      labels:
+        app: helpos-agg
+    spec:
+      containers:
+      - name: helpos-agg
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.agg.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.agg.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-agg-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

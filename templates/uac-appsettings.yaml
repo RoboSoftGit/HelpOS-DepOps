@@ -1,0 +1,42 @@
+{{- if .Values.uac.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-uac-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-uac",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+      "MasterDatabase": "{{ .Values.uac.ConnectionStrings.MasterDatabase }}"
+    }
+   }
+
+{{- end }}

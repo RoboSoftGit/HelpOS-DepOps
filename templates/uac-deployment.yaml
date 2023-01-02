@@ -1,0 +1,48 @@
+{{- if .Values.uac.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helpos-uac-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: helpos-uac
+spec:
+  replicas: {{ .Values.uac.replicaCount }}
+  selector:
+    matchLabels:
+      app: helpos-uac
+  template:
+    metadata:
+      labels:
+        app: helpos-uac
+    spec:
+      containers:
+      - name: helpos-uac
+        image: "{{ .Values.backend.image.repository }}/{{ .Values.uac.image }}:{{ .Values.backend.image.tag }}"
+        ports:
+        - containerPort: 80
+        {{- if .Values.uac.livenessProbe }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: {{ .Values.livenessProbe.port }}
+            scheme: {{ .Values.livenessProbe.scheme }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+       - name: config-volume
+         configMap:
+           name: helpos-uac-configmap
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+{{- end }}

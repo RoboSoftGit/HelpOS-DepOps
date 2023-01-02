@@ -1,0 +1,52 @@
+{{- if .Values.templateservice.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helpos-templateservice-configmap
+  namespace: {{ .Values.namespace }}
+data:
+  appsettings.json: |
+   {
+    "Serilog": {
+      "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.Http" ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "WriteTo": [
+        { "Name": "Console" },
+        {
+          "Name": "Http",
+          "Args": {
+            "requestUri": "{{ .Values.logs.logstashUrl }}"
+          }
+        }
+      ],
+      "Enrich": [ "FromLogContext" ],
+      "Properties": {
+        "Application": "helpos-templateservice",
+        "Environment": "{{ .Values.logs.environment }}"
+      }
+    },
+
+    "AllowedHosts": "*",
+    "RemoteServices" : [
+      {
+        "Name": "ORG",
+        "BaseUrl": "{{ .Values.templateservice.RemoteServices.org.BaseUrl }}",
+        "Timeout": {{ .Values.templateservice.RemoteServices.org.Timeout }},
+        "Retry": {{ .Values.templateservice.RemoteServices.org.Retry }},
+        "Cache": {{ .Values.templateservice.RemoteServices.org.Cache }},
+        "IgnoreServerCertificate": {{ .Values.templateservice.RemoteServices.org.IgnoreServerCertificate }}
+      }
+    ],
+    "ConnectionStrings": {
+      "MasterDatabase": "{{ .Values.templateservice.ConnectionStrings.MasterDatabase }}"
+    }
+   }
+
+{{- end }}
